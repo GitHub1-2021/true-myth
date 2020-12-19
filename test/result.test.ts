@@ -1,5 +1,5 @@
 import { expectTypeOf } from 'expect-type';
-import { just, nothing } from '../src/maybe';
+import Maybe, { just, nothing } from '../src/maybe';
 import Result, { Ok, Variant, Err } from '../src/result';
 import Unit from '../src/unit';
 import { AndThenAliases } from './test-utils';
@@ -399,6 +399,39 @@ describe('`Result` pure functions', () => {
 
     const obj: unknown = { random: 'nonsense' };
     expect(Result.isInstance(obj)).toBe(false);
+  });
+
+  describe('fromJSON', () => {
+    describe('Ok', () => {
+      test('valid', () => {
+        let validOk = { variant: 'Ok', value: 12 };
+        let parsed = Result.fromJSON(validOk);
+        expect(parsed).toStrictEqual(just(Result.ok(12)));
+        expectTypeOf(parsed).toEqualTypeOf<Maybe<Result<number, unknown>>>();
+      });
+
+      test('invalid', () => {
+        let missingTag = { value: 12 };
+        let parsedMissingTag = Result.fromJSON(missingTag);
+        expect(parsedMissingTag).toStrictEqual(nothing());
+        expectTypeOf(parsedMissingTag).toEqualTypeOf<Maybe<Result<unknown, unknown>>>();
+
+        let missingValue = { variant: 'Ok' };
+        let parsedMissingValue = Result.fromJSON(missingValue);
+        let totalNonsense = 'looool';
+        expect(parsed).toStrictEqual(just(Result.err('crying here')));
+        expectTypeOf(parsed).toEqualTypeOf<Maybe<Result<unknown, string>>>();
+      });
+    });
+
+    describe('Err', () => {
+      test('valid', () => {
+        let validErr = { variant: 'Err', value: 'crying here' };
+        let parsed = Result.fromJSON(validErr);
+        expect(parsed).toStrictEqual(just(Result.err('crying here')));
+        expectTypeOf(parsed).toEqualTypeOf<Maybe<Result<unknown, string>>>();
+      });
+    });
   });
 });
 

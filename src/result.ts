@@ -1611,6 +1611,8 @@ export function isInstance<T = unknown, E = unknown>(item: unknown): item is Res
   return item instanceof Ok || item instanceof Err;
 }
 
+export function fromJSON<T = unknown, E = unknown>(input: unknown): Maybe<Result<T, E>> {}
+
 /**
   A value which may (`Ok`) or may not (`Err`) be present.
 
